@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Build & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v4
+      - uses: mlugg/setup-zig@5a940f4199f14d79fa86144e3926f6eb94917088 # v1
+        with:
+          version: 0.17.1
+      - run: zig build test
+      - run: zig build -Doptimize=ReleaseFast
+      - run: python3 .github/scripts/repo_guard.py .
